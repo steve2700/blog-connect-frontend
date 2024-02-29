@@ -1,12 +1,13 @@
-// UserRegistrationForm.jsx
+// UserLoginForm.jsx
 
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-const UserRegistrationForm = () => {
+const UserLoginForm = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
     password: '',
   });
@@ -25,10 +26,6 @@ const UserRegistrationForm = () => {
     const newErrors = {};
 
     // Check for required fields
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    }
-
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     }
@@ -43,11 +40,6 @@ const UserRegistrationForm = () => {
       newErrors.email = 'Email should be in a valid format';
     }
 
-    // Check for minimum username length
-    if (formData.username.trim().length < 3) {
-      newErrors.username = 'Username should be at least 3 characters long';
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setSuccessMessage('');
@@ -55,17 +47,23 @@ const UserRegistrationForm = () => {
     }
 
     try {
-      // Make the backend API call to http://localhost:3001/api/users/signup
-      const response = await axios.post('http://localhost:3001/api/users/signup', formData);
+      // Make the backend API call to http://localhost:3001/api/users/login
+      const response = await axios.post('http://localhost:3001/api/users/login', formData);
 
-      // Assuming your backend sends a 201 status code on successful registration
-      if (response.status === 201) {
-        setSuccessMessage(response.data.message);
+      // Assuming your backend sends a 200 status code on successful login
+      if (response.status === 200) {
+        setSuccessMessage('Login successful');
         setErrors({});
+        // Redirect to the dashboard/user page
+        navigate('/dashboard/user');
       }
     } catch (error) {
-      if (error.response.status === 409) {
-        setErrors({ username: 'Username or email already exists' });
+      if (error.response.status === 404) {
+        setErrors({ email: 'User not found.' });
+      } else if (error.response.status === 401) {
+        setErrors({ password: 'Invalid password.' });
+      } else if (error.response.status === 422) {
+        setErrors({ email: 'Email not confirmed. Please verify your email address.' });
       } else {
         setErrors(error.response.data.errors || { generic: 'An error occurred. Please try again.' });
       }
@@ -76,7 +74,7 @@ const UserRegistrationForm = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full md:w-2/3 lg:w-1/2 xl:w-1/3">
-        <h2 className="text-2xl mb-6 font-bold text-center">Sign Up</h2>
+        <h2 className="text-2xl mb-6 font-bold text-center">Log In</h2>
 
         {successMessage && (
           <div className="mb-4 text-green-500">{successMessage}</div>
@@ -85,22 +83,6 @@ const UserRegistrationForm = () => {
         {errors.generic && (
           <div className="mb-4 text-red-500">{errors.generic}</div>
         )}
-
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-            Username
-          </label>
-          <input
-            className={`appearance-none border rounded w-full py-2 px-3 ${errors.username && 'border-red-500'}`}
-            id="username"
-            type="text"
-            placeholder="Username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-          />
-          {errors.username && <p className="text-red-500 text-xs italic">{errors.username}</p>}
-        </div>
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
@@ -139,15 +121,21 @@ const UserRegistrationForm = () => {
             className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue hover:bg-blue-700"
             type="submit"
           >
-            Sign Up
+            Log In
           </button>
         </div>
 
         <div className="text-center">
           <p className="text-sm">
-            Already have an account?{' '}
-            <Link to="/login" className="text-blue-500 hover:underline">
-              Log in here
+            Don't have an account?{' '}
+            <Link to="/signup" className="text-blue-500 hover:underline">
+              Sign up here
+            </Link>
+          </p>
+          <p className="text-sm">
+            Forgot your password?{' '}
+            <Link to="/forgot-password" className="text-blue-500 hover:underline">
+              Reset it here
             </Link>
           </p>
         </div>
@@ -156,5 +144,5 @@ const UserRegistrationForm = () => {
   );
 };
 
-export default UserRegistrationForm;
+export default UserLoginForm;
 
