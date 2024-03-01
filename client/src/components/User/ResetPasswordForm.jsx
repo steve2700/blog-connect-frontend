@@ -23,7 +23,7 @@ const ResetPasswordForm = () => {
       }
 
       // Make the backend API call to reset password
-      const response = await axios.post(`http://localhost:3001/api/user/reset-password/${token}`, { newPassword });
+      const response = await axios.post(`http://localhost:3001/auth/reset-password/${token}`, { newPassword });
 
       if (response.status === 200) {
         setMessage(response.data.message);

@@ -48,7 +48,7 @@ const UserLoginForm = () => {
 
     try {
       // Make the backend API call to http://localhost:3001/api/users/login
-      const response = await axios.post('http://localhost:3001/api/users/login', formData);
+      const response = await axios.post('http://localhost:3001/auth/login', formData);
 
       // Assuming your backend sends a 200 status code on successful login
       if (response.status === 200) {

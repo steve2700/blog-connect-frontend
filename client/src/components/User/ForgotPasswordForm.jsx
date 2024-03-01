@@ -28,7 +28,7 @@ const ForgotPasswordForm = () => {
         return;
       }
 
-      const response = await axios.post('http://localhost:3001/api/user/forgot-password', { email });
+      const response = await axios.post('http://localhost:3001/auth/forgot-password', { email });
 
       if (response.status === 200) {
         setMessage(response.data.message);
