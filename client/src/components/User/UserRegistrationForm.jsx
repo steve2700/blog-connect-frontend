@@ -83,7 +83,7 @@ const UserRegistrationForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full md:w-2/3 lg:w-1/2 xl:w-1/3">
+      <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full md:w-2/3 lg:w-1/2 xl:w-1/3" onSubmit={handleSubmit} method="post">
         <h2 className="text-2xl mb-6 font-bold text-center">Sign Up</h2>
 
         {successMessage && <Message message={successMessage} type="success" />}
