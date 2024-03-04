@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Message from './Message';
+import SuccessCard from './SuccessCard';
 
 const UserRegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -100,7 +101,8 @@ const UserRegistrationForm = () => {
       <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full md:w-2/3 lg:w-1/2 xl:w-1/3" onSubmit={handleSubmit} method="post">
         <h2 className="text-2xl mb-6 font-bold text-center">Sign Up</h2>
 
-        {successMessage && <Message message={successMessage} type="success" />}
+        {successMessage && <SuccessCard message={successMessage} />}
+
 
         {errors.generic && <Message message={errors.generic} type="error" />}
 
