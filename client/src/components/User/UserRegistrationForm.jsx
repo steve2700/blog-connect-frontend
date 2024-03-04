@@ -19,6 +19,14 @@ const UserRegistrationForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const resetForm = () => {
+    setFormData({
+      username: '',
+      email: '',
+      password: '',
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -61,28 +69,30 @@ const UserRegistrationForm = () => {
       setSuccessMessage('');
       return;
     }
+
     try {
-  // Make the backend API call
-  const response = await axios.post('http://localhost:3001/auth/signup', formData);
+      // Make the backend API call
+      const response = await axios.post('http://localhost:3001/auth/signup', formData);
 
-  // Assuming your backend sends a 201 status code on successful registration
-  if (response.status === 201) {
-    setSuccessMessage(response.data.message);
-    setErrors({});
-  }
-} catch (error) {
-	 console.error('Registration error:', error.response.data);
-	// Check if the error response has a specific error message
-	if (error.response.data.error) {
-		setErrors({ generic: error.response.data.error });
-	} else {
-		setErrors(error.response.data.errors || { generic: 'An error occurred. Please try again.' });
-	}
-	setSuccessMessage('');
-}
+      // Assuming your backend sends a 201 status code on successful registration
+      if (response.status === 200) {
+        setSuccessMessage(response.data.message);
+        setErrors({}); // Clear errors on success
+        resetForm(); // Reset the form data
+      }
+    } catch (error) {
+      console.error('Registration error:', error.response.data);
+      // Check if the error response has a specific error message
+      if (error.response.status === 422 && error.response.data.error.includes('duplicate key error')) {
+	      // Handle duplicate key error (username or email already exists)
+	      setErrors({ generic: 'Username or email already exists. Please choose a different one.' });
 
+      } else {
+        setErrors(error.response.data.errors || { generic: 'An error occurred. Please try again.' });
+      }
 
-    
+      setSuccessMessage('');
+    }
   };
 
   return (
@@ -106,8 +116,7 @@ const UserRegistrationForm = () => {
             name="username"
             value={formData.username}
             onChange={handleChange}
-	    autoComplete="current-username"
-	    
+            autoComplete="current-username"
           />
           {errors.username && <Message message={errors.username} type="error" />}
         </div>
@@ -124,7 +133,7 @@ const UserRegistrationForm = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-	    autoComplete="current-email"
+            autoComplete="current-email"
           />
           {errors.email && <Message message={errors.email} type="error" />}
         </div>
@@ -141,7 +150,7 @@ const UserRegistrationForm = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-	    autoComplete="current-password"
+            autoComplete="current-password"
           />
           {errors.password && <Message message={errors.password} type="error" />}
         </div>
