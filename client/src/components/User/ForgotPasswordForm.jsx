@@ -1,7 +1,6 @@
-// ForgotPasswordForm.jsx
-
 import React, { useState } from 'react';
 import axios from 'axios';
+import { FaEnvelope } from 'react-icons/fa'; // Importing required icons
 import Message from './Message';
 
 const ForgotPasswordForm = () => {
@@ -53,6 +52,7 @@ const ForgotPasswordForm = () => {
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            <FaEnvelope className="inline-block mr-2" />
             Email
           </label>
           <input
@@ -63,6 +63,7 @@ const ForgotPasswordForm = () => {
             name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+	    autoComplete="current-email"
           />
         </div>
 

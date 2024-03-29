@@ -1,8 +1,7 @@
-// UserLoginForm.jsx
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaEnvelope, FaLock } from 'react-icons/fa'; // Importing required icons
 
 const UserLoginForm = () => {
   const navigate = useNavigate();
@@ -17,6 +16,19 @@ const UserLoginForm = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const resetForm = () => {
+    setFormData({
+      email: '',
+      password: '',
+    });
+  };
+
+  const hideMessageAfterDelay = (setter) => {
+    setTimeout(() => {
+      setter('');
+    }, 5000);
   };
 
   const handleSubmit = async (e) => {
@@ -34,24 +46,21 @@ const UserLoginForm = () => {
       newErrors.password = 'Password is required';
     }
 
-    // Check for valid email format
-    const emailRegex = /^\S+@\S+\.\S+$/;
-    if (formData.email.trim() && !emailRegex.test(formData.email.trim())) {
-      newErrors.email = 'Email should be in a valid format';
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setSuccessMessage('');
+      hideMessageAfterDelay(setErrors);
       return;
     }
 
     try {
-      // Make the backend API call to http://localhost:3001/api/users/login
+      // Make the backend API call to http://localhost:3001/auth/login
       const response = await axios.post('http://localhost:3001/auth/login', formData);
 
       // Assuming your backend sends a 200 status code on successful login
       if (response.status === 200) {
+        // Store the token in localStorage
+        localStorage.setItem('token', response.data.token);
         setSuccessMessage('Login successful');
         setErrors({});
         // Redirect to the dashboard/user page
@@ -68,6 +77,7 @@ const UserLoginForm = () => {
         setErrors(error.response.data.errors || { generic: 'An error occurred. Please try again.' });
       }
       setSuccessMessage('');
+      hideMessageAfterDelay(setErrors);
     }
   };
 
@@ -86,6 +96,7 @@ const UserLoginForm = () => {
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            <FaEnvelope className="inline-block mr-2" />
             Email
           </label>
           <input
@@ -102,6 +113,7 @@ const UserLoginForm = () => {
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+            <FaLock className="inline-block mr-2" />
             Password
           </label>
           <input
@@ -120,6 +132,7 @@ const UserLoginForm = () => {
           <button
             className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue hover:bg-blue-700"
             type="submit"
+            onClick={handleSubmit}
           >
             Log In
           </button>

@@ -1,8 +1,7 @@
-// ResetPasswordForm.jsx
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { FaLock } from 'react-icons/fa'; // Importing required icons
 import Message from './Message';
 
 const ResetPasswordForm = () => {
@@ -48,6 +47,7 @@ const ResetPasswordForm = () => {
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="newPassword">
+            <FaLock className="inline-block mr-2" />
             New Password
           </label>
           <input

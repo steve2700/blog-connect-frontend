@@ -1,8 +1,7 @@
-// UserRegistrationForm.jsx
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa'; // Importing required icons
 import Message from './Message';
 import SuccessCard from './SuccessCard';
 
@@ -26,6 +25,12 @@ const UserRegistrationForm = () => {
       email: '',
       password: '',
     });
+  };
+
+  const hideMessageAfterDelay = (setter) => {
+    setTimeout(() => {
+      setter('');
+    }, 5000);
   };
 
   const handleSubmit = async (e) => {
@@ -68,6 +73,7 @@ const UserRegistrationForm = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setSuccessMessage('');
+      hideMessageAfterDelay(setErrors);
       return;
     }
 
@@ -80,34 +86,37 @@ const UserRegistrationForm = () => {
         setSuccessMessage(response.data.message);
         setErrors({}); // Clear errors on success
         resetForm(); // Reset the form data
+        hideMessageAfterDelay(setSuccessMessage);
       }
     } catch (error) {
       console.error('Registration error:', error.response.data);
       // Check if the error response has a specific error message
       if (error.response.status === 422 && error.response.data.error.includes('duplicate key error')) {
-	      // Handle duplicate key error (username or email already exists)
-	      setErrors({ generic: 'Username or email already exists. Please choose a different one.' });
-
+        // Handle duplicate key error (username or email already exists)
+        setErrors({ generic: 'Username or email already exists. Please choose a different one.' });
       } else {
         setErrors(error.response.data.errors || { generic: 'An error occurred. Please try again.' });
       }
-
       setSuccessMessage('');
+      hideMessageAfterDelay(setErrors);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full md:w-2/3 lg:w-1/2 xl:w-1/3" onSubmit={handleSubmit} method="post">
+      <form
+        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full md:w-2/3 lg:w-1/2 xl:w-1/3"
+        onSubmit={handleSubmit}
+        method="post"
+      >
         <h2 className="text-2xl mb-6 font-bold text-center">Sign Up</h2>
 
         {successMessage && <SuccessCard message={successMessage} />}
-
-
         {errors.generic && <Message message={errors.generic} type="error" />}
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+            <FaUser className="inline-block mr-2" />
             Username
           </label>
           <input
@@ -125,6 +134,7 @@ const UserRegistrationForm = () => {
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            <FaEnvelope className="inline-block mr-2" />
             Email
           </label>
           <input
@@ -142,18 +152,34 @@ const UserRegistrationForm = () => {
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+            <FaLock className="inline-block mr-2" />
             Password
           </label>
-          <input
-            className={`appearance-none border rounded w-full py-2 px-3 ${errors.password && 'border-red-500'}`}
-            id="password"
-            type="password"
-            placeholder="Password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            autoComplete="current-password"
-          />
+          <div className="relative">
+            <input
+              className={`appearance-none border rounded w-full py-2 px-3 ${errors.password && 'border-red-500'}`}
+              id="password"
+              type="password"
+              placeholder="Password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              className="absolute top-0 right-0 mr-4 mt-3"
+              onClick={() => {
+                const passwordInput = document.getElementById('password');
+                passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+                setTimeout(() => {
+                  passwordInput.type = 'password';
+                }, 5000);
+              }}
+            >
+              Show
+            </button>
+          </div>
           {errors.password && <Message message={errors.password} type="error" />}
         </div>
 

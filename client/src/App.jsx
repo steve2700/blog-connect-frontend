@@ -1,11 +1,9 @@
-// App.jsx
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import UserRegistrationForm from './components/User/UserRegistrationForm';
-import UserLoginForm from './components/User/UserLoginForm';
-import ForgotPasswordForm from './components/User/ForgotPasswordForm';
-import ResetPasswordForm from './components/User/ResetPasswordForm';
+import UserRegistrationPage from './pages/UserRegistrationPage'; // Import the user registration page
+import UserLoginPage from './pages/UserLoginPage'; // Import the user login page
+import ForgotPasswordPage from './pages/ForgotPasswordPage'; // Import the forgot password page
+import ResetPasswordPage from './pages/ResetPasswordPage'; // Import the reset password page
 
 function App() {
   return (
@@ -17,11 +15,11 @@ function App() {
 
         {/* Use the Routes component and wrap Route components inside it */}
         <Routes>
-          {/* Add a route for the UserRegistrationForm */}
-          <Route path="/signup" element={<UserRegistrationForm />} />
-	  <Route path="/login" element={<UserLoginForm />} />
-	  <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-	  <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
+          {/* Add routes for the different pages */}
+          <Route path="/signup" element={<UserRegistrationPage />} />
+          <Route path="/login" element={<UserLoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         </Routes>
       </div>
     </Router>
