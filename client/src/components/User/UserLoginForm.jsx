@@ -7,7 +7,7 @@ const UserLoginForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    email: '',
+    identifier: '', // Changed from 'email' to 'identifier'
     password: '',
   });
 
@@ -20,7 +20,7 @@ const UserLoginForm = () => {
 
   const resetForm = () => {
     setFormData({
-      email: '',
+      identifier: '', // Changed from 'email' to 'identifier'
       password: '',
     });
   };
@@ -28,7 +28,7 @@ const UserLoginForm = () => {
   const hideMessageAfterDelay = (setter) => {
     setTimeout(() => {
       setter('');
-    }, 5000);
+    }, 7000);
   };
 
   const handleSubmit = async (e) => {
@@ -38,8 +38,8 @@ const UserLoginForm = () => {
     const newErrors = {};
 
     // Check for required fields
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+    if (!formData.identifier.trim()) {
+      newErrors.identifier = 'Email/Username is required'; // Changed from 'email' to 'identifier'
     }
 
     if (!formData.password.trim()) {
@@ -61,18 +61,18 @@ const UserLoginForm = () => {
       if (response.status === 200) {
         // Store the token in localStorage
         localStorage.setItem('token', response.data.token);
-        setSuccessMessage('Login successful');
+        setSuccessMessage('Welcome back! You have logged in successfully.'); // Updated success message
         setErrors({});
-        // Redirect to the dashboard/user page
-        navigate('/dashboard/user');
+        // Redirect to the dashboard/user page (update the route according to your actual route)
+        navigate('/dashboard'); 
       }
     } catch (error) {
       if (error.response.status === 404) {
-        setErrors({ email: 'User not found.' });
+        setErrors({ identifier: 'User not found.' }); // Changed from 'email' to 'identifier'
       } else if (error.response.status === 401) {
         setErrors({ password: 'Invalid password.' });
       } else if (error.response.status === 422) {
-        setErrors({ email: 'Email not confirmed. Please verify your email address.' });
+        setErrors({ identifier: 'Email not confirmed. Please verify your email address.' }); // Changed from 'email' to 'identifier'
       } else {
         setErrors(error.response.data.errors || { generic: 'An error occurred. Please try again.' });
       }
@@ -87,28 +87,32 @@ const UserLoginForm = () => {
         <h2 className="text-2xl mb-6 font-bold text-center">Log In</h2>
 
         {successMessage && (
-          <div className="mb-4 text-green-500">{successMessage}</div>
+          <div className="mb-4 bg-green-200 text-green-800 rounded p-2">{successMessage}</div>
         )}
 
-        {errors.generic && (
-          <div className="mb-4 text-red-500">{errors.generic}</div>
+        {Object.keys(errors).length > 0 && (
+          <div className="mb-4 bg-red-200 text-red-800 rounded p-2">
+            {Object.values(errors).map((error, index) => (
+              <p key={index}>{error}</p>
+            ))}
+          </div>
         )}
 
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="identifier">
             <FaEnvelope className="inline-block mr-2" />
-            Email
+            Email/Username 
           </label>
           <input
-            className={`appearance-none border rounded w-full py-2 px-3 ${errors.email && 'border-red-500'}`}
-            id="email"
-            type="email"
-            placeholder="Email"
-            name="email"
-            value={formData.email}
+            className={`appearance-none border rounded w-full py-2 px-3 ${errors.identifier && 'border-red-500'}`}
+            id="identifier"
+            type="text"
+            placeholder="Email/Username" 
+            name="identifier" // Changed from 'email' to 'identifier'
+            value={formData.identifier}
             onChange={handleChange}
           />
-          {errors.email && <p className="text-red-500 text-xs italic">{errors.email}</p>}
+          {errors.identifier && <p className="text-red-500 text-xs italic">{errors.identifier}</p>}
         </div>
 
         <div className="mb-4">

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa'; // Importing required icons
+import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
 import Message from './Message';
 import SuccessCard from './SuccessCard';
 
@@ -36,10 +36,8 @@ const UserRegistrationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
     const newErrors = {};
 
-    // Check for required fields
     if (!formData.username.trim()) {
       newErrors.username = 'Username is required';
     }
@@ -52,18 +50,15 @@ const UserRegistrationForm = () => {
       newErrors.password = 'Password is required';
     }
 
-    // Check for valid email format
     const emailRegex = /^\S+@\S+\.\S+$/;
     if (formData.email.trim() && !emailRegex.test(formData.email.trim())) {
       newErrors.email = 'Email should be in a valid format';
     }
 
-    // Check for minimum username length
     if (formData.username.trim().length < 3) {
       newErrors.username = 'Username should be at least 3 characters long';
     }
 
-    // Check for password requirements
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
     if (formData.password.trim() && !passwordRegex.test(formData.password.trim())) {
       newErrors.password =
@@ -78,25 +73,28 @@ const UserRegistrationForm = () => {
     }
 
     try {
-      // Make the backend API call
       const response = await axios.post('http://localhost:3001/auth/signup', formData);
 
-      // Assuming your backend sends a 201 status code on successful registration
       if (response.status === 200) {
         setSuccessMessage(response.data.message);
-        setErrors({}); // Clear errors on success
-        resetForm(); // Reset the form data
+        setErrors({});
+        resetForm();
         hideMessageAfterDelay(setSuccessMessage);
       }
     } catch (error) {
       console.error('Registration error:', error.response.data);
-      // Check if the error response has a specific error message
-      if (error.response.status === 422 && error.response.data.error.includes('duplicate key error')) {
-        // Handle duplicate key error (username or email already exists)
-        setErrors({ generic: 'Username or email already exists. Please choose a different one.' });
+
+      if (error.response.status === 422 && error.response.data.error === 'Username or email is already taken.') {
+        setErrors({ generic: error.response.data.error });
       } else {
-        setErrors(error.response.data.errors || { generic: 'An error occurred. Please try again.' });
+        setErrors({
+          username: error.response.data.errors?.username || '',
+          email: error.response.data.errors?.email || '',
+          password: error.response.data.errors?.password || '',
+          generic: 'An error occurred. Please try again.',
+        });
       }
+
       setSuccessMessage('');
       hideMessageAfterDelay(setErrors);
     }
